@@ -188,16 +188,3 @@ class ClusteredFedAvg(fl.server.strategy.FedAvg):
 
         return parameters_aggregated, metrics_aggregated
         
-        
-if __name__=="__main__":
-    warnings.filterwarnings("ignore")
-    
-    make_model_folder(f"./Models/{args.version}")
-    history=fl.server.start_server(server_address="[::]:8084",strategy=ClusteredFedAvg(evaluate_fn=fl_save, inplace=False, min_fit_clients=4, min_available_clients=4, min_evaluate_clients=4), 
-                           config=fl.server.ServerConfig(num_rounds=args.round))
-    # plt=pd.DataFrame(history.losses_distributed, index=None)[1]
-    # plt.plot().figure.savefig(f"./Plot/{args.version}_loss.png")
-    # plt.to_csv(f"./Csv/{args.version}_loss.csv")
-    performance_cluseter = pd.DataFrame(CosVsMaha, index=None)[1:]
-    # performance_cluseter.plot().figure.savefig(f"./Plot/{args.version}_cluster.png")
-    performance_cluseter.to_csv(f"./Csv/{args.version}_cluster.csv")

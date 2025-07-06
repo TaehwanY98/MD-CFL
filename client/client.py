@@ -42,36 +42,5 @@ class FedAvgClient(fl.client.NumPyClient):
         # history = self.valid(self.net, self.valid_loader, None, lossf=self.lossf, DEVICE=self.DEVICE)
         # return history["loss"], len(self.valid_loader), {key:value for key, value in history.items() if key != "loss" }
         # return 1.0, 0, {"accuracy":0.95}
-    
-if __name__ =="__main__":
-    warnings.filterwarnings("ignore")
-    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    args = Federatedparser()
-    
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
-    torch.cuda.manual_seed_all(args.seed)
-    np.random.seed(args.seed)
-    random.seed(args.seed)
-    torch.backends.cudnn.benchmark = False
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.enabled = False
-    if args.wesad_path != None:
-        valid_ids = os.listdir(os.path.join(args.wesad_path, "valid"))
-        valid_data = WESADDataset(pkl_files=[os.path.join(args.wesad_path, "valid", id, id+".pkl") for id in valid_ids], test_mode=args.test)
-        valid_loader = DataLoader(valid_data, batch_size=args.batch_size, shuffle=False, collate_fn= lambda x:x)
-        
-        train_ids = os.listdir(os.path.join(args.wesad_path, f"client{args.id}"))
-        train_data = WESADDataset(pkl_files=[os.path.join(args.wesad_path, f"client{args.id}", id, id+".pkl") for id in train_ids],test_mode=args.test)
-        train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, collate_fn= lambda x:x)
-    
-    
-    net = GRU(3, 4, 1)
-    net.to(DEVICE)
-    if args.pretrained is not None:
-        net.load_state_dict(torch.load(args.pretrained))
-    lossf = nn.BCEWithLogitsLoss()
-    optimizer = SGD(net.parameters(), lr=1e-2)
-    if args.wesad_path != None:
-        fl.client.start_client(server_address="[::]:8084", client= FedAvgClient(net, train_loader, valid_loader, args.epoch, lossf, optimizer, DEVICE).to_client())
+
     

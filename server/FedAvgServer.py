@@ -47,11 +47,3 @@ def fl_save(server_round:int, parameters: fl.common.NDArrays, config:Dict[str, f
     save(net.state_dict(), f"./Models/{args.version}/net.pt")
     print("model is saved")
     return 0, {}
-if __name__=="__main__":
-    warnings.filterwarnings("ignore")
-    make_model_folder(f"./Models/{args.version}")
-    history=fl.server.start_server(server_address="[::]:8084",strategy=fl.server.strategy.FedAvg(evaluate_fn = fl_save,inplace=False, min_fit_clients=4, min_available_clients=4, min_evaluate_clients=4), 
-                           config=fl.server.ServerConfig(num_rounds=args.round))
-    # plt=pd.DataFrame(history.losses_distributed, index=None)[1]
-    # plt.plot().figure.savefig(f"./Plot/{args.version}_loss.png")
-    # plt.to_csv(f"./Csv/{args.version}_loss.csv")
