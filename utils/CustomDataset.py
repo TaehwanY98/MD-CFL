@@ -1,5 +1,5 @@
 import pickle
-from torch import Tensor, where
+from torch import Tensor, where, stack
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 import pandas as pd
@@ -30,8 +30,8 @@ class WESADDataset(object):
             EDA=self.file['signal']['chest']['EDA']
             Temp=self.file['signal']['chest']['Temp']
         
-        X=self.Normalization([(float(acc),float(eda), float(temp)) for acc , eda, temp in zip(ACC, EDA, Temp)])
-        X= Tensor(X)
+        # X=self.Normalization([(float(acc),float(eda), float(temp)) for acc , eda, temp in zip(ACC, EDA, Temp)])
+        X= stack([Tensor(ACC).squeeze(), Tensor(EDA).squeeze(), Tensor(Temp).squeeze()], dim=1)
         Y = where(Tensor(label)>2, 1.0, 0.0)
         # label = list(map(f, label))
         

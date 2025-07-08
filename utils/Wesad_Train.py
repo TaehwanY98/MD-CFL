@@ -17,10 +17,10 @@ def train(net, train_loader, valid_loader, epoch, lossf, optimizer, DEVICE, save
         net.train()
         for sample in tqdm(train_loader, desc="train: "):
             X =  torch.stack([s["x"] for s in sample], dim=0)
-            Y = torch.stack([s["label"] for s in sample], dim=0).unsqueeze(-1)
-            out = net(X.type(float32).to(DEVICE))
+            Y = torch.stack([s["label"] for s in sample], dim=0)
+            out = net(X.squeeze().type(float32).to(DEVICE))
             # print(out.size())
-            loss = lossf(out.type(float32).to(DEVICE), Y.type(float32).to(DEVICE))
+            loss = lossf(out.squeeze().type(float32).to(DEVICE), Y.squeeze().type(float32).to(DEVICE))
             
             loss.backward()
             optimizer.step()
@@ -44,8 +44,8 @@ def valid(net, valid_loader, e, lossf, DEVICE):
     loss=0
     for sample in tqdm(valid_loader, desc="validation:"):
         X =  torch.stack([s["x"] for s in sample])
-        Y = torch.stack([s["label"] for s in sample]).unsqueeze(-1)
-        out = net(X.type(float32).to(DEVICE))
-        loss += lossf(out.type(float32).to(DEVICE), Y.type(float32).to(DEVICE))
+        Y = torch.stack([s["label"] for s in sample])
+        out = net(X.type(float32).squeeze().to(DEVICE))
+        loss += lossf(out.squeeze().type(float32).to(DEVICE), Y.squeeze().type(float32).to(DEVICE))
         
     return {'loss': loss.item()/length}

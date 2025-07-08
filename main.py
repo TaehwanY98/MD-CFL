@@ -73,7 +73,7 @@ if __name__=="__main__":
             net = K_emo_GRU(3, 4, 1)
         net.to(DEVICE)
         if args.mode == "fedavg":
-            strategy = FedAvgServer(net= net, testLoader=valid_loader, args=args,inplace=True, lossf=Lossf,min_fit_clients=10, min_available_clients=10, min_evaluate_clients=10)
+            strategy = FedAvgServer(net= net, eval_loader=valid_loader, args=args,inplace=True, lossf=Lossf,min_fit_clients=10, min_available_clients=10, min_evaluate_clients=10)
         elif args.mode == "ccfl":
             strategy = ClusteredFedAvg(net=net, testLoader=valid_loader, args=args, inplace=False, lossf=Lossf, CosVsMaha=CosVsMaha,min_fit_clients=10, min_available_clients=10, min_evaluate_clients=10)
         elif args.mod == "mdcfl":

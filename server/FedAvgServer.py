@@ -13,14 +13,14 @@ from flwr.common import (
 )
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 class FedAvgServer(flwr.server.strategy.FedAvg):
-    def __init__(self, net, eval_loader, lossf, args):
-        super().__init__()
+    def __init__(self, net, eval_loader, lossf, args, inplace=True, min_fit_clients=10, min_available_clients=10, min_evaluate_clients=10):
+        super().__init__(inplace=inplace, min_fit_clients=min_fit_clients, min_available_clients=min_available_clients, min_evaluate_clients=min_evaluate_clients)
         self.net = net
         self.eval_loader = eval_loader
         self.lossf = lossf
         self.args = args
-    def aggregate_fit(self, ins: flwr.common.FitIns) -> flwr.common.FitRes:
-        super().aggregate_fit(ins)
+    def aggregate_fit(self, server_round, results, failures) -> flwr.common.FitRes:
+        return super().aggregate_fit(server_round, results, failures)
     def evaluate(self, server_round: int, parameters)-> Optional[Tuple[float, Dict[str, flwr.common.Scalar]]]:
         parameters = parameters_to_ndarrays(parameters)
         if self.args.type=="wesad":
@@ -29,7 +29,7 @@ class FedAvgServer(flwr.server.strategy.FedAvg):
             validF = kemoValid
 
         set_parameters(self.net, parameters)
-        history=validF(self.net, self.validLoader, 0, self.lossf.to(DEVICE), DEVICE, True)
+        history=validF(self.net, self.eval_loader, 0, self.lossf.to(DEVICE), DEVICE)
         make_dir(self.args.result_path)
         make_dir(os.path.join(self.args.result_path, self.args.mode))
         if server_round != 0:

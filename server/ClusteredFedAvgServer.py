@@ -178,7 +178,7 @@ class ClusteredFedAvg(flwr.server.strategy.FedAvg):
             validF = kemoValid
 
         set_parameters(self.net, parameters)
-        history=validF(self.net, self.validLoader, 0, self.lossf.to(DEVICE), DEVICE, True)
+        history=validF(self.net, self.testLoader, 0, self.lossf.to(DEVICE), DEVICE)
         make_dir(self.args.result_path)
         make_dir(os.path.join(self.args.result_path, self.args.mode))
         if server_round != 0:

@@ -1,5 +1,5 @@
 
-## Clustered Federated Learning Based on Number of Samples Mahalanobis Distance in Sequence Data for Medical Area
+## Clustered Federated Learning Based on Mahalanobis Distance for Sequential Medical Data
 ____
 
 ### Abstract

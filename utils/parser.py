@@ -50,5 +50,6 @@ def Simulationparser():
     parser.add_argument("--test", type= bool, default=False)
     parser.add_argument("-m", "--mode", type= str, default="fedavg")
     parser.add_argument("-t", "--type", type= str, default="wesad")
+    parser.add_argument("--result-path", type= str, default="Result")
     args = parser.parse_args()
     return args

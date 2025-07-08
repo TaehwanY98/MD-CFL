@@ -5,14 +5,12 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 # from Old_train import train, valid
 import warnings
-from utils import *
-from Network import *
 import os
 from torch.optim import SGD
 import numpy as np
 import random
 class FedAvgClient(fl.client.NumPyClient):
-    def __init__(self, net, train_loader, valid_loader, epoch, lossf, optimizer, DEVICE, trainF=train, validF=valid):
+    def __init__(self, net, train_loader, valid_loader, epoch, lossf, optimizer, DEVICE, trainF=None, validF=None):
         super(FedAvgClient, self).__init__()
         self.net = net
         self.keys = net.state_dict().keys()
