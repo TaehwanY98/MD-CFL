@@ -1,7 +1,9 @@
 Models
 Result
 Csv
-WESAD
+Data
+
+
 __pycache__
 *.pyc
 *.pkl

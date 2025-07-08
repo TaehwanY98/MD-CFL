@@ -25,7 +25,7 @@ class FedAvgClient(fl.client.NumPyClient):
         self.train = trainF
         self.valid = validF
     def get_parameters(self, config):
-        return [val.cpu().numpy() for _, val in self.net.state_dict().items()]
+        return [val.cpu().detach().numpy() for _, val in self.net.state_dict().items()]
 
     def set_parameters(self, parameters):
         params_dict = zip(self.keys, parameters)

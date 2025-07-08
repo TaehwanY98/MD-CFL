@@ -1,49 +1,47 @@
-from collections import OrderedDict
 from typing import Dict, List, Optional, Tuple
-import flwr as fl
+import flwr 
 import torch
-import torch.nn as nn
 from torch import save
-from torch.utils.data import DataLoader
-from Old_train import valid, make_model_folder
-import warnings
-from utils import *
+from utils.Wesad_Train import valid as wesadValid, make_dir
+from utils.Kemo_Train import valid as kemoValid
 from Network import *
 
 import os
 import pandas as pd
-
+from flwr.common import (
+    parameters_to_ndarrays,
+)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-args = Federatedparser()
-if args.wesad_path !=None:
-        eval_ids = os.listdir(os.path.join(args.wesad_path, "valid"))
-        eval_data = WESADDataset(pkl_files=[os.path.join(args.wesad_path, "valid", id, id+".pkl") for id in eval_ids], test_mode=args.test)
-        eval_loader = DataLoader(eval_data, batch_size=args.batch_size, shuffle=False, collate_fn= lambda x:x)
-else:
-        eval_data = IMDBDataset(args.seed, test_mode=args.test)
-        eval_loader = DataLoader(eval_data, batch_size=args.batch_size, shuffle=False, collate_fn= lambda x:x)
-lossf = nn.BCEWithLogitsLoss()
-net = GRU(3, 4, 1)
+class FedAvgServer(flwr.server.strategy.FedAvg):
+    def __init__(self, net, eval_loader, lossf, args):
+        super().__init__()
+        self.net = net
+        self.eval_loader = eval_loader
+        self.lossf = lossf
+        self.args = args
+    def aggregate_fit(self, ins: flwr.common.FitIns) -> flwr.common.FitRes:
+        super().aggregate_fit(ins)
+    def evaluate(self, server_round: int, parameters)-> Optional[Tuple[float, Dict[str, flwr.common.Scalar]]]:
+        parameters = parameters_to_ndarrays(parameters)
+        if self.args.type=="wesad":
+            validF = wesadValid
+        if self.args.type == "kemo":
+            validF = kemoValid
 
-if args.pretrained is not None:
-        net.load_state_dict(torch.load(args.pretrained))
-net.to(DEVICE)
-
+        set_parameters(self.net, parameters)
+        history=validF(self.net, self.validLoader, 0, self.lossf.to(DEVICE), DEVICE, True)
+        make_dir(self.args.result_path)
+        make_dir(os.path.join(self.args.result_path, self.args.mode))
+        if server_round != 0:
+            old_historyframe = pd.read_csv(os.path.join(self.args.result_path, self.args.mode, f'FedAvg_{self.args.type}.csv'))
+            historyframe = pd.DataFrame({k:[v] for k, v in history.items()})
+            newframe=pd.concat([old_historyframe, historyframe])
+            newframe.to_csv(os.path.join(self.args.result_path, self.args.mode, f'FedAvg_{self.args.type}.csv'), index=False)
+        else:
+            pd.DataFrame({k:[v] for k, v in history.items()}).to_csv(os.path.join(self.args.result_path, self.args.mode, f'FedAvg_{self.args.type}.csv'), index=False)
+        save(self.net.state_dict(), f"./Models/{self.args.version}/net.pt")
+        return history['loss'], {key:value for key, value in history.items() if key != "loss" }
+    
 def set_parameters(net, parameters):
-    params_dict = zip(net.state_dict().keys(), parameters)
-    state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
-    net.load_state_dict(state_dict, strict=True)
-
-
-def fl_evaluate(server_round:int, parameters: fl.common.NDArrays, config:Dict[str, fl.common.Scalar], validF=valid)-> Optional[Tuple[float, Dict[str, fl.common.Scalar]]]:
-    set_parameters(net, parameters)
-    history=validF(net, eval_loader, None, lossf, DEVICE)
-    save(net.state_dict(), f"./Models/{args.version}/net.pt")
-    print(f"Server-side evaluation loss {history['loss']} / accuracy {history['acc']} / precision {history['precision']} / f1score {history['f1score']}")
-    return history['loss'], {key:value for key, value in history.items() if key != "loss" }
-
-def fl_save(server_round:int, parameters: fl.common.NDArrays, config:Dict[str, fl.common.Scalar], validF=valid)-> Optional[Tuple[float, Dict[str, fl.common.Scalar]]]:
-    set_parameters(net, parameters)
-    save(net.state_dict(), f"./Models/{args.version}/net.pt")
-    print("model is saved")
-    return 0, {}
+    for old, new in zip(net.parameters(), parameters):
+        old.data = torch.Tensor(new).to(DEVICE)

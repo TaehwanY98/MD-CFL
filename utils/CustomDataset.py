@@ -4,13 +4,6 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 import pandas as pd
 import os
-# from keras._tf_keras.keras.preprocessing.sequence import pad_sequences
-# import keras
-# from sklearn.model_selection import train_test_split
-# def f(x):
-#     lis = [0,0,0,0,0,0,0,0]
-#     lis[x]=1
-#     return lis
 
 class WESADDataset(object):
     def __init__(self, pkl_files:list, test_mode=False) -> None:
@@ -50,7 +43,7 @@ class WESADDataset(object):
     def __len__(self):
         return len(self.files)
     
-class K_EMODataset(object):
+class KemoDataset(object):
     def __init__(self, data_dir, label_dir) -> None:
         self.clients = os.listdir(data_dir)
         self.EDA = [pd.read_csv(os.path.join(data_dir,path,"E4_EDA.csv")) for path in self.clients]
