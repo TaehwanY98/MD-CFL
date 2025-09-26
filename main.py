@@ -54,7 +54,7 @@ def set_parameters(net, new_parameters):
 def client_fn(context: Context):
     net = GRU(3, 4, 1)
     net.to(DEVICE)
-    rate = random.randint(2, 9)/10
+    rate = random.randint(1, 4)/10
     trainset, _ = random_split(train_dataset, [rate, 1-rate])
     train_loader = DataLoader(trainset, args.batch_size, shuffle=True , collate_fn=lambda x: x)
     if args.type == "wesad":
