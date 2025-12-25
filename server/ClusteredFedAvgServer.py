@@ -138,7 +138,9 @@ class ClusteredFedAvg(flwr.server.strategy.FedAvg):
             print(cluster_indexs)
             if self.args.mode == "ccfl":
                 self.CosVsMaha["cosine"].append(kmeans.inertia_)
+                self.CosVsMaha["mahalanobis"].append(None)
             elif self.args.mode == "mdcfl":
+                self.CosVsMaha["cosine"].append(None)
                 self.CosVsMaha["mahalanobis"].append(kmeans.inertia_)
                 
                 
@@ -160,7 +162,9 @@ class ClusteredFedAvg(flwr.server.strategy.FedAvg):
                 parameters_aggregated = ndarrays_to_parameters(aggregated_ndarrays_indexing)
                 if self.args.mode == "ccfl":
                     self.CosVsMaha["cosine_sil"].append(sum([silhouette_score(np.stack(samples), cluster_indexs) for samples in zip(*only_params)])/len(list(zip(*only_params))))
+                    self.CosVsMaha["mahalanobis_sil"].append(None)
                 elif self.args.mode == "mdcfl":
+                    self.CosVsMaha["cosine_sil"].append(None)
                     self.CosVsMaha["mahalanobis_sil"].append(sum([silhouette_score(np.stack(samples), cluster_indexs) for samples in zip(*only_params)])/len(list(zip(*only_params))))
 
                 if server_round != 0:

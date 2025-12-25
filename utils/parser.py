@@ -46,10 +46,10 @@ def Simulationparser():
     parser.add_argument("-bs", "--batch-size", type= int, default=1)
     parser.add_argument("-l", "--lr", type= float, default=4e-3)
     parser.add_argument("-d", "--data-dir", type= str, default=None, required=True)
-    parser.add_argument("-cd", "--client-dir", type= str, default=None, required=True)
     parser.add_argument("--test", type= bool, default=False)
     parser.add_argument("-m", "--mode", type= str, default="fedavg")
     parser.add_argument("-t", "--type", type= str, default="wesad")
     parser.add_argument("--result-path", type= str, default="Result")
+    parser.add_argument("-cn", "--client-num", type= int, default=10)
     args = parser.parse_args()
     return args

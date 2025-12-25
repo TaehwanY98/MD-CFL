@@ -34,3 +34,7 @@ __Clustered federated learning (CFL) is one of the fundamental methods for addre
 in distributed environments. In scenarios with data heterogeneity, federated learning typically performs
 worse than CFL because heterogeneity exists among distributed data. This paper provides an overview
 of federated learning and clustered federated learning.__
+
+### Result
+
+<img src="./res/loss.png" width="300pt"><img src="./res/silhouette.png" width="300pt"><img src="./res/result.png" width="300pt">
