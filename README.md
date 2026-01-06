@@ -17,24 +17,12 @@ and improving clustering performance by correcting for feature skew in non-norma
 show that MD-CFL achieves accurate clustering performance, with a higher Silhouette score compared to
 cosine-based FedAvg.
 
-### Introduction
-In recent years, researchers have been able to aggregate metadata from medical devices using various
-sensors. This metadata includes users' private data from distributed sources, making privacy a critical
-concern for training AI models. Federated learning (FL) allows the model to be trained by sharing only
-parameters with a central server, without exposing the user's actual data. This feature of federated learning
-helps protect user privacy while allowing researchers to train AI models [1]. However, federated learning
-has its limitations, especially regarding model heterogeneity. This paper focuses on solving the problem
-of model heterogeneity by proposing a clustering method based on Mahalanobis distance, called
-Mahalanobis Distance based Clustered Federated Learning (MD-CFL). The method is designed to
-mitigate model heterogeneity. This research compares the performance of cosine-based FedAvg with our
-MD-CFL based FedAvg on the WESAD (Wearable Stress and Affect Detection) and K-EmoCon datasets.
-Experimental results show that under conditions of model heterogeneity, our MD-CFL based clustering
-method outperforms the cosine-based method and achieves a higher silhouette score.
-__Clustered federated learning (CFL) is one of the fundamental methods for addressing data heterogeneity
-in distributed environments. In scenarios with data heterogeneity, federated learning typically performs
-worse than CFL because heterogeneity exists among distributed data. This paper provides an overview
-of federated learning and clustered federated learning.__
+[Paper_Link: https://doi.org/10.3745/JIPS.03.0211](https://doi.org/10.3745/JIPS.03.0211) 
 
 ### Result
 
-<img src="./res/loss.png" width="300pt"><img src="./res/silhouette.png" width="300pt"><img src="./res/result.png" width="300pt">
+<img src="./res/loss.png" width="300pt">
+
+<img src="./res/silhouette.png" width="300pt">
+
+<img src="./res/result.png" width="600pt">
